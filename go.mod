@@ -1,4 +1,4 @@
-module SubscriptionService/v2
+module SubscriptionService
 
 go 1.19
 
