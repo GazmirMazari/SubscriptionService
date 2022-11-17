@@ -9,10 +9,9 @@ import (
 )
 
 type Config struct {
-	// Session holds the session secret
-	Session   *scs.SessionManager
-	DB        *sql.DB
-	Info      *log.Logger
-	Error     *log.Logger
-	WaitGroup *sync.WaitGroup
+	Session  *scs.SessionManager
+	DB       *sql.DB
+	InfoLog  *log.Logger
+	ErrorLog *log.Logger
+	Wait     *sync.WaitGroup
 }
