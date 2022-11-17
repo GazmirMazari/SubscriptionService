@@ -3,9 +3,14 @@ package main
 import (
 	"database/sql"
 	"log"
+	"net/http"
 	"os"
+	"sync"
 	"time"
 
+	"github.com/alexedwards/scs/redisstore"
+	"github.com/alexedwards/scs/v2"
+	"github.com/gomodule/redigo/redis"
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -14,44 +19,53 @@ import (
 const webPort = "80"
 
 func main() {
-	//connect to the database
-	db := initDb()
-	db.Ping()
-	//create session
+	// connect to the database
+	db := initDB()
 
-	//create channels
+	// create sessions
+	session := initSession()
 
-	//create waitgroups
+	//create loggers
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	//set up the application config
+	// create channels
 
-	//set up mail
+	// create waitgroup
+	wg := &sync.WaitGroup{}
 
-	//listen for web connections
+	// set up the application config
+	app := &Config{
+		Session:   session,
+		DB:        db,
+		Info:      infoLog,
+		Error:     errorLog,
+		WaitGroup: wg,
+	}
+	// set up mail
 
+	// listen for web connections
 }
 
-func initDb() *sql.DB {
-	//connect to the database
-	conn := connectToDb()
+func initDB() *sql.DB {
+	conn := connectToDB()
 	if conn == nil {
-		log.Panic("can't connect to the database")
+		log.Panic("can't connect to database")
 	}
-
 	return conn
 }
 
-func connectToDb() *sql.DB {
+func connectToDB() *sql.DB {
 	counts := 0
 
-	dsn := os.Getenv("DB_DSN")
+	dsn := os.Getenv("DSN")
 
 	for {
-		connection, err := OpenDB(dsn)
+		connection, err := openDB(dsn)
 		if err != nil {
-			log.Println("can't connect to the database")
+			log.Println("postgres not yet ready...")
 		} else {
-			log.Println("connected to the database")
+			log.Print("connected to database!")
 			return connection
 		}
 
@@ -62,12 +76,12 @@ func connectToDb() *sql.DB {
 		log.Print("Backing off for 1 second")
 		time.Sleep(1 * time.Second)
 		counts++
-	}
 
+		continue
+	}
 }
 
-func OpenDB(dsn string) (*sql.DB, error) {
-
+func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
@@ -79,4 +93,27 @@ func OpenDB(dsn string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func initSession() *scs.SessionManager {
+	// set up session
+	session := scs.New()
+	session.Store = redisstore.New(initRedis())
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = true
+
+	return session
+}
+
+func initRedis() *redis.Pool {
+	redisPool := &redis.Pool{
+		MaxIdle: 10,
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", os.Getenv("REDIS"))
+		},
+	}
+
+	return redisPool
 }
