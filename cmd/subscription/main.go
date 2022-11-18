@@ -21,7 +21,7 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-const webPort = "8080"
+const webPort = "80"
 
 func main() {
 	// connect to the database
@@ -46,11 +46,12 @@ func main() {
 		InfoLog:  infoLog,
 		ErrorLog: errorLog,
 		Wait:     &wg,
+		Models:   data.New(db),
 	}
 
 	// set up mail
 
-	//listen for shutdown signal
+	// listen for signals
 	go app.listenForShutdown()
 
 	// listen for web connections
@@ -153,20 +154,19 @@ func initRedis() *redis.Pool {
 }
 
 func (app *Config) listenForShutdown() {
-	// listen for shutdown signal
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
 	<-quit
 	app.shutdown()
 	os.Exit(0)
 }
 
 func (app *Config) shutdown() {
+	// perform any cleanup tasks
+	app.InfoLog.Println("would run cleanup tasks...")
 
-	app.InfoLog.Println("would run cleanup taks....")
-
+	// block until waitgroup is empty
 	app.Wait.Wait()
 
-	app.InfoLog.Println("shutting down...")
+	app.InfoLog.Println("closing channels and shutting down application...")
 }
