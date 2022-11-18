@@ -2,11 +2,13 @@ package main
 
 import (
 	"database/sql"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"subscription-service/v2/data"
 	"sync"
 	"syscall"
 	"time"
@@ -124,6 +126,8 @@ func openDB(dsn string) (*sql.DB, error) {
 
 // initSession sets up a session, using Redis for session store
 func initSession() *scs.SessionManager {
+	gob.Register(data.User{})
+
 	// set up session
 	session := scs.New()
 	session.Store = redisstore.New(initRedis())
