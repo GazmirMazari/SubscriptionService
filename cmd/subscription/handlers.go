@@ -1,10 +1,10 @@
 package main
 
 import (
-	"final-project/data"
 	"fmt"
 	"html/template"
 	"net/http"
+	"subscription-service/v2/data"
 )
 
 func (app *Config) HomePage(w http.ResponseWriter, r *http.Request) {
