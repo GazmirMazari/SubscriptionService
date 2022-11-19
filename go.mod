@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/alexedwards/scs/redisstore v0.0.0-20220528130143-d93ace5be94b
 	github.com/alexedwards/scs/v2 v2.5.0
-	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gomodule/redigo v1.8.9
 	github.com/jackc/pgconn v1.13.0
 	github.com/jackc/pgx/v4 v4.17.2
@@ -14,7 +13,14 @@ require (
 	golang.org/x/crypto v0.3.0
 )
 
-require golang.org/x/sys v0.2.0 // indirect
+require (
+	github.com/phpdave11/gofpdf v1.4.2 // indirect
+	github.com/phpdave11/gofpdi v1.0.12 // indirect
+	github.com/phpdave11/gopdf v0.9.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/signintech/gopdf v0.15.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
+)
 
 require (
 	github.com/PuerkitoBio/goquery v1.5.1 // indirect
