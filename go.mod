@@ -8,17 +8,15 @@ require (
 	github.com/gomodule/redigo v1.8.9
 	github.com/jackc/pgconn v1.13.0
 	github.com/jackc/pgx/v4 v4.17.2
+	github.com/phpdave11/gofpdf v1.4.2
 	github.com/vanng822/go-premailer v1.20.1
 	github.com/xhit/go-simple-mail/v2 v2.13.0
 	golang.org/x/crypto v0.3.0
 )
 
 require (
-	github.com/phpdave11/gofpdf v1.4.2 // indirect
 	github.com/phpdave11/gofpdi v1.0.12 // indirect
-	github.com/phpdave11/gopdf v0.9.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/signintech/gopdf v0.15.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 )
 
@@ -26,6 +24,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.1 // indirect
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/bwmarrin/go-alone v0.0.0-20190806015146-742bb55d1631
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-test/deep v1.0.8 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
