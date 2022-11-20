@@ -66,11 +66,19 @@ func (m *Mail) sendMail(msg Message, errorChan chan error) {
 		msg.FromName = m.FromName
 	}
 
-	data := map[string]any{
-		"message": msg.Data,
+	if msg.AttachmentMap == nil {
+		msg.AttachmentMap = make(map[string]string)
 	}
 
-	msg.DataMap = data
+	// data := map[string]any{
+	// 	"message": msg.Data,
+	// }
+
+	if len(msg.DataMap) == 0 {
+		msg.DataMap = make(map[string]any)
+	}
+
+	msg.DataMap["message"] = msg.Data
 
 	// build html mail
 	formattedMessage, err := m.buildHTMLMessage(msg)
@@ -111,6 +119,12 @@ func (m *Mail) sendMail(msg Message, errorChan chan error) {
 		}
 	}
 
+	if len(msg.AttachmentMap) > 0 {
+		for key, value := range msg.AttachmentMap {
+			email.AddAttachment(value, key)
+		}
+	}
+
 	err = email.Send(smtpClient)
 	if err != nil {
 		errorChan <- err
@@ -140,7 +154,7 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 }
 
 func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
-	templateToRender := fmt.Sprintf("./cmd/web/templates/%s.plain.gohtml", msg.Template)
+	templateToRender := fmt.Sprintf("./cmd/subscription/templates/%s.plain.gohtml", msg.Template)
 
 	t, err := template.New("email-plain").ParseFiles(templateToRender)
 	if err != nil {
